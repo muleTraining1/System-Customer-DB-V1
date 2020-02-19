@@ -1,0 +1,14 @@
+db:
+ connection:
+  host: "![oRW8NBitQaOkLQlT8TX+uU+sAj46TsTb]"
+  port: "![qObSVab930Q=]"
+  user: "![GL7LR0+xIUPrVtQERkcrNA==]"
+  password: "![8RtCZzMvdiMNaqpXBV8QHA==]"
+
+
+
+Http:
+ connection:
+  Host: "![Wej36YGyyN0=]"
+  Port: "![MJWK21uTDug=]"
+

@@ -1,0 +1,14 @@
+db:
+ connection:
+  host: "den1.mssql6.gear.host"
+  port: "1433"
+  user: "customer4"
+  password: "Ff4B!!8P901h"
+  
+  
+  
+Http:
+ connection:
+  Host: "0.0.0.0"
+  Port: "8081"
+  
