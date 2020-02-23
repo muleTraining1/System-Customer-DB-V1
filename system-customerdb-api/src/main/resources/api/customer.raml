@@ -65,4 +65,8 @@ traits:
           type: customerType
           example: !include examples/customerExample.raml      
       responses:
-        204:
+        200:
+          body:
+            application/json:
+              type: successResponse
+              

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="customerId-GET-implementation_Flow" doc:id="d282a752-ce31-4be5-964f-ca97b2c33b78" >
+		<db:select doc:name="Select CustomerID" doc:id="fbd7a5dd-d420-474d-b535-55b94a0246b1" config-ref="Database_Config">
+			<db:sql >SELECT  firstName,emailID,lastName,custID,phoneNo FROM
+                Customer4.dbo.customer WHERE custID = :customerId</db:sql>
+			<db:input-parameters ><![CDATA[#[{'customerId': attributes.uriParams.'customerId'}]]]></db:input-parameters>
+		</db:select>
+		<logger level="INFO" doc:name="Got_Customer_with_CustID" doc:id="02c5a016-ffc9-4a1d-b4aa-515a36b7e73f" message="#['Successfully got the record for customerID']"/>
+		<ee:transform doc:name="CustomerDetails" doc:id="3af0db03-3821-46bd-a02d-a48ecdffc8f4">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	customerId: payload[0].custID,
+    firstName: payload[0].firstName,
+    emailId: payload[0].emailID,
+    lastName: payload[0].lastName,
+    phoneNumber: payload[0].phoneNo
+
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+		<error-handler ref="errorhandlingError_Handler" >
+			
+		</error-handler>
+	</flow>
+	<flow name="customerId-PUT-implementation_Flow" doc:id="44f7fcd3-43ff-48b7-a165-e060fb6f94c0" >
+		<ee:transform doc:name="Transform Message" doc:id="ddd6c390-3a3f-4242-822e-a22887460026">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	custID    : attributes.uriParams.customerId,
+	firstName : payload.firstName,
+	emailID   : payload.emailId,
+	lastName  : payload.lastName,
+	phoneNo   : payload.phoneNumber
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+		<db:update doc:name="Update Customer" doc:id="863d68f2-1dcd-44a9-8502-1abb4838dfc1" config-ref="Database_Config">
+					<db:sql>UPDATE dbo.customer SET firstName = :firstName,
+													emailID= :emailId,
+													lastName = :lastName,
+													phoneNo = :phoneNumber
+    										WHERE custID = :customerId</db:sql>
+					<db:input-parameters><![CDATA[#[{
+	'customerId' : payload['custID'] as Number,
+    'firstName' : payload['firstName'] as String,
+    'emailId' : payload['emailID'] as String,
+    'lastName' : payload['lastName'] as String,
+    'phoneNumber' : payload['phoneNo'] as String
+}]]]></db:input-parameters>
+				</db:update>
+		<choice doc:name="customer_updated?" doc:id="052fd909-c1ad-417d-9302-5e4afe3ea609" >
+			<when expression="#[payload.affectedRows == 1]">
+				<logger level="INFO" doc:name="success" doc:id="e44ffd3b-a2dc-45b3-bd82-8c798370d032" message="updated Successfuly!!!"/>
+				<ee:transform doc:name="UpdatedCustomer" doc:id="765dece0-aa18-4127-96aa-b8b72928c0f8" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise>
+				<raise-error doc:name="Raise error" doc:id="20472ca3-4230-466c-b828-608c30c880aa" type="CUSTOMER:NOTFOUND" description="CustomerID doesnot exist!!!!"/>
+			</otherwise>
+		</choice>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="76938032-6643-400c-ad17-6a6a99f7b336" type="ANY" when="#[error.description]">
+				<ee:transform doc:name="Transform Message" doc:id="1159bef4-0c0c-44d8-b9f0-28be2064dd5c" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": error.description,
+	"error-type":error.errorType
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>

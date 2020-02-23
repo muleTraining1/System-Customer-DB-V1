@@ -1,5 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd"></mule>
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="POST-implementation_Flow" doc:id="fd7f542f-b2a4-4afb-8a15-00a44b3c6a8a" >
+		<ee:transform doc:name="Transform Message" doc:id="2ab58398-1c41-49b7-b81f-10248431fc48" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	firstName: payload.firstName,
+	emailID: payload.emailId,
+	lastName: payload.lastName,
+	custID: payload.customerId,
+	phoneNo: payload.phoneNumber
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:insert doc:name="Insert" doc:id="02e24d7e-fb27-499a-a749-7f223d3e48b1" config-ref="Database_Config">
+			<db:sql >INSERT into customer4.dbo.customer (firstName,emailID,lastName,custID,phoneNo) VALUES (:firstName, :emailId, :lastName, :customerId, :phoneNumber);</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	customerId: payload.custID,
+firstName: payload.firstName,
+emailId: payload.emailID,
+lastName: payload.lastName,
+phoneNumber: payload.phoneNo
+
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="22bc18de-702e-4a90-8b7f-500fa52570cc" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
