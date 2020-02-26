@@ -104,6 +104,7 @@ output application/json
 </on-error-propagate>
         </error-handler>
         <sub-flow name="global-error-response-subFlow" doc:id="ab688d11-1d82-42d3-8f91-4cda2f2deb72" >
+		<logger level="ERROR" doc:name="ErrorPayload" doc:id="7df34783-c4cf-4c2a-ac5a-4c0a2b03b6f5" message="#[payload]"/>
 		<ee:transform doc:name="Compose-Error-Response" doc:id="d4c4e8f7-4ada-4d0c-806c-e138833f51a2">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
