@@ -19,7 +19,7 @@ http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/sc
 	<db:config name="Database_Config" doc:name="Database Config" doc:id="0379367f-5e77-4b0e-ad62-4e4495e399bc" >
 		<db:mssql-connection host="${secure::db.connection.host}" user="${secure::db.connection.user}" password="${secure::db.connection.password}" port="${secure::db.connection.port}"/>
 	</db:config>
-	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="3d823e5d-856f-48c5-868c-8c28dc15a761" file="${myenv}.yaml" key="muletraining" >
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="3d823e5d-856f-48c5-868c-8c28dc15a761" file="secure-file-dev.yaml" key="muletraining" >
 		<secure-properties:encrypt algorithm="Blowfish" />
 	</secure-properties:config>
 	<configuration doc:name="Configuration" doc:id="e335e426-cc91-4f9b-9df4-c5922ed09e6f" defaultErrorHandler-ref="errorhandlingError_Handler" />

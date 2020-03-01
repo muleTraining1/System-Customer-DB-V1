@@ -20,11 +20,12 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 output application/json
 ---
 {
-	customerId: payload[0].custID,
-    firstName: payload[0].firstName,
-    emailId: payload[0].emailID,
-    lastName: payload[0].lastName,
-    phoneNumber: payload[0].phoneNo
+	
+    firstName: payload[0].firstName as String,
+    emailId: payload[0].emailID as String,
+    lastName: payload[0].lastName as String,
+    customerId: payload[0].custID as Number,
+    phoneNumber: payload[0].phoneNo as String
 
 }]]></ee:set-payload>
 					</ee:message>
@@ -73,7 +74,7 @@ output application/json
 				<ee:transform doc:name="UpdatedCustomer" doc:id="765dece0-aa18-4127-96aa-b8b72928c0f8" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
+output application/json
 ---
 payload]]></ee:set-payload>
 					</ee:message>
